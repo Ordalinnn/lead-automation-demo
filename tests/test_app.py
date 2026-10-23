@@ -12,7 +12,7 @@ from leads.models import LeadIn
 @pytest.fixture
 def client(tmp_path, monkeypatch):
     settings = Settings(
-        claude_model="claude-opus-5-5", use_claude=False, sheet_id=None, google_credentials=None,
+        claude_model="claude-haiku-5-5", use_claude=False, sheet_id=None, google_credentials=None,
         telegram_token=None, telegram_chat_id=None, csv_path=tmp_path / "leads.csv",
     )
     monkeypatch.setattr(app_module, "settings", settings)

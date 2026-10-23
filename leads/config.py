@@ -26,7 +26,7 @@ class Settings:
 
 def load_settings() -> Settings:
     return Settings(
-        claude_model=os.getenv("CLAUDE_MODEL", "claude-opus-5-5"),
+        claude_model=os.getenv("CLAUDE_MODEL", "claude-haiku-5-5"),
         use_claude=bool(os.getenv("ANTHROPIC_API_KEY")),
         sheet_id=os.getenv("GOOGLE_SHEET_ID"),
         google_credentials=os.getenv("GOOGLE_CREDENTIALS_FILE"),
