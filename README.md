@@ -59,20 +59,40 @@ uvicorn app:app --reload
 
 ## Подключение к сайту клиента
 
-Сайт отправляет POST на `/api/lead`:
+Для конструкторов сайтов есть адрес вебхука, который понимает любые названия полей:
 
-```json
-{"name": "Анна", "phone": "+7 900 000-00-00", "email": "", "message": "Сколько стоит доставка?", "source": "tilda"}
+```
+https://ВАШ-СЕРВЕР/webhook?key=WEBHOOK_SECRET&source=tilda
 ```
 
-Подходит для Tilda (вебхук формы), WordPress (Contact Form 7 + webhook), любого своего сайта или готовой формы из `static/index.html`.
+Сервер отвечает сразу, а разбор заявки идёт в фоне, поэтому конструктор не ждёт ответа от ИИ. Имя, телефон, email и текст распознаются автоматически, а остальные поля (услуга, филиал, дата) дописываются в текст заявки.
 
-Хостинг: любой VPS за $5/мес или Render/Railway. Команда запуска: `uvicorn app:app --host 0.0.0.0 --port 8000`.
+**Tilda.** Настройки сайта → Формы → Webhook → вставить адрес вебхука → в блоке формы включить этот сервис. Tilda проверит адрес тестовым запросом, сервер ответит `ok`.
+
+**WordPress.** Contact Form 7 или Elementor Forms: в настройках формы добавить действие «Webhook» и указать адрес вебхука. Поля `your-name`, `your-phone`, `your-email`, `your-message` распознаются сами.
+
+**Свой сайт или форма из `static/index.html`.** JSON на `/api/lead`:
+
+```json
+{"name": "Анна", "phone": "+7 701 000 00 00", "email": "", "message": "Сколько стоит доставка?", "source": "сайт"}
+```
+
+## Запуск на сервере
+
+Подойдёт любой VPS за $5 в месяц (бесплатные тарифы Render и Railway засыпают, и первая заявка после паузы может прийти с задержкой).
+
+```bash
+docker build -t leads .
+docker run -d --restart unless-stopped --env-file .env -p 8000:8000 -v $(pwd)/data:/app/data leads
+```
+
+Без Docker: `pip install -r requirements.txt` и `uvicorn app:app --host 0.0.0.0 --port 8000`. Для HTTPS поставьте перед сервером Caddy или nginx: конструкторы сайтов отправляют вебхуки только на `https://`.
 
 ## Структура
 
 ```
-app.py               веб-сервер и форма
+app.py               веб-сервер, форма и вебхук
+leads/webhook.py     распознавание полей Tilda, WordPress и других форм
 leads/classifier.py  разбор заявки (Claude или правила)
 leads/storage.py     Google Sheets / CSV
 leads/notifier.py    Telegram

@@ -74,3 +74,59 @@ def test_health(client):
     http, _ = client
     assert http.get("/health").json()["claude"] is False
     assert http.get("/").status_code == 200
+
+
+@pytest.fixture
+def hook(tmp_path, monkeypatch):
+    settings = Settings(
+        claude_model="claude-haiku-5-5", use_claude=False, sheet_id=None, google_credentials=None,
+        telegram_token=None, telegram_chat_id=None, csv_path=tmp_path / "leads.csv", webhook_secret="s3cret",
+    )
+    monkeypatch.setattr(app_module, "settings", settings)
+    return TestClient(app_module.app), settings.csv_path
+
+
+def test_webhook_requires_key(hook):
+    http, _ = hook
+    assert http.post("/webhook", data={"Phone": "+77010000000"}).status_code == 403
+    assert http.post("/webhook?key=wrong", data={"Phone": "+77010000000"}).status_code == 403
+
+
+def test_webhook_tilda_test_ping(hook):
+    http, csv_path = hook
+    res = http.post("/webhook?key=s3cret", data={"test": "test"})
+    assert res.status_code == 200 and res.text == "ok"
+    assert not csv_path.exists()
+
+
+def test_webhook_tilda_form(hook):
+    http, csv_path = hook
+    res = http.post("/webhook?key=s3cret", data={
+        "Name": "Айгерим", "Phone": "+7 701 000 00 00", "Textarea": "Сколько стоит чистка зубов? Можно сегодня?",
+        "Service": "Чистка", "formname": "Запись", "tranid": "123:456",
+    })
+    assert res.status_code == 200
+    row = read_rows(csv_path)[1]
+    assert row[1:5] == ["Айгерим", "+7 701 000 00 00", "", "Запись"]
+    assert "Service: Чистка" in row[5] and "tranid" not in row[5]
+
+
+def test_webhook_wordpress_cf7_json(hook):
+    http, csv_path = hook
+    res = http.post("/webhook?key=s3cret&source=wordpress", json={
+        "your-name": "Ерлан", "your-email": "erlan@example.kz", "your-message": "Нужна консультация",
+    })
+    assert res.status_code == 200
+    row = read_rows(csv_path)[1]
+    assert row[1] == "Ерлан" and row[3] == "erlan@example.kz" and row[4] == "wordpress"
+
+
+def test_webhook_without_contact(hook):
+    http, _ = hook
+    assert http.post("/webhook?key=s3cret", data={"Name": "Без контактов"}).status_code == 422
+
+
+def test_webhook_phone_only(hook):
+    http, csv_path = hook
+    assert http.post("/webhook?key=s3cret", data={"phone": "87010000000"}).status_code == 200
+    assert read_rows(csv_path)[1][1] == "Без имени"

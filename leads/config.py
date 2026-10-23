@@ -14,6 +14,7 @@ class Settings:
     telegram_token: str | None
     telegram_chat_id: str | None
     csv_path: Path
+    webhook_secret: str | None = None
 
     @property
     def use_sheets(self) -> bool:
@@ -33,4 +34,5 @@ def load_settings() -> Settings:
         telegram_token=os.getenv("TELEGRAM_BOT_TOKEN"),
         telegram_chat_id=os.getenv("TELEGRAM_CHAT_ID"),
         csv_path=Path(os.getenv("LEADS_CSV", "data/leads.csv")),
+        webhook_secret=os.getenv("WEBHOOK_SECRET") or None,
     )

@@ -1,0 +1,8 @@
+.env
+service-account.json
+data/
+video/
+__pycache__/
+.pytest_cache/
+.git/
+*.mp4
