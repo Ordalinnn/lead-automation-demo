@@ -30,9 +30,9 @@
   h1 { margin: 0; font: 700 clamp(24px, 3.4vw, 34px)/1.15 var(--display); text-wrap: balance; letter-spacing: -0.01em; }
   header p { margin: 0; color: var(--muted); }
 
-  .flow { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1.5fr) minmax(0, 360px); gap: 16px; align-items: start; }
-  @media (max-width: 1080px) { .flow { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .sheet { grid-column: 1 / -1; order: 3; } }
-  @media (max-width: 700px) { .flow { grid-template-columns: minmax(0, 1fr); } }
+  .flow { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); gap: 16px; align-items: start; }
+  .sheet { grid-column: 1 / -1; order: 3; }
+  @media (max-width: 760px) { .flow { grid-template-columns: minmax(0, 1fr); } }
 
   .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; min-width: 0; display: flex; flex-direction: column; }
   .bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
@@ -62,6 +62,7 @@
   th, td { border: 1px solid var(--line); padding: 7px 9px; text-align: left; vertical-align: top; }
   th { background: var(--sheet-head); font-weight: 600; white-space: nowrap; }
   td.n { font: 12px var(--mono); color: var(--muted); text-align: center; width: 34px; }
+  td.c { white-space: nowrap; }
   td.t { font: 12px var(--mono); white-space: nowrap; font-variant-numeric: tabular-nums; }
   tr.new td { animation: flash 2.2s ease-out; }
   @keyframes flash { from { background: var(--row-new); } to { background: transparent; } }
@@ -70,7 +71,7 @@
 
   /* Telegram */
   .tg .bar .dot { background: var(--tg); }
-  .chat { background: var(--tg-bg); padding: 14px; display: flex; flex-direction: column; gap: 10px; max-height: 560px; overflow-y: auto; min-height: 260px; }
+  .chat { background: var(--tg-bg); padding: 14px; display: flex; flex-direction: column; gap: 10px; max-height: 578px; height: 578px; overflow-y: auto; min-height: 260px; }
   .msg { background: var(--bubble); border-radius: 12px 12px 12px 4px; padding: 10px 12px; font-size: 14px; max-width: 100%; box-shadow: 0 1px 1px rgba(0,0,0,.08); }
   .msg.new { animation: pop .35s ease-out; }
   @keyframes pop { from { transform: translateY(8px); opacity: .4; } to { transform: none; opacity: 1; } }
@@ -109,7 +110,7 @@
     </section>
 
     <section class="panel sheet" aria-label="Google Таблица">
-      <div class="bar"><span class="dot"></span><span class="step">2 · таблица</span><b>Заявки · Google Sheets</b></div>
+      <div class="bar"><span class="dot"></span><span class="step">3 · таблица</span><b>Заявки · Google Sheets</b></div>
       <div class="grid-wrap">
         <table>
           <thead><tr><th></th><th>Дата</th><th>Имя</th><th>Контакт</th><th>Категория</th><th>Приоритет</th><th>Суть</th></tr></thead>
@@ -119,7 +120,7 @@
     </section>
 
     <section class="panel tg" aria-label="Telegram менеджера">
-      <div class="bar"><span class="dot"></span><span class="step">3 · telegram</span><b>Бот «Заявки»</b></div>
+      <div class="bar"><span class="dot"></span><span class="step">2 · telegram</span><b>Бот «Заявки»</b></div>
       <div class="chat" id="chat" aria-live="polite"></div>
     </section>
   </div>
@@ -187,7 +188,7 @@ function addRow(lead, a, when, fresh) {
     el("td", { class: "n" }, String(rowCount + 1)),
     el("td", { class: "t" }, when.full),
     el("td", {}, lead.name),
-    el("td", {}, lead.phone || lead.email),
+    el("td", { class: "c" }, lead.phone || lead.email),
     el("td", {}, a.category),
   );
   const pr = el("td"); pr.append(el("span", { class: `pill p-${a.priority}` }, a.priority));
