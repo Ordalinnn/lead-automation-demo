@@ -1,0 +1,250 @@
+<title>Заявки на автопилоте</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: три панели слева направо повторяют путь заявки — сайт → таблица → Telegram */
+  :root {
+    --bg: #eef1f4; --panel: #ffffff; --fg: #17202b; --muted: #5d6875; --line: #d5dbe2;
+    --accent: #1f5fd6; --sheet: #137a3c; --sheet-head: #e6f2ea; --tg: #2b8fd8; --tg-bg: #dfe8ef; --bubble: #ffffff;
+    --hi: #c62828; --mid: #b26a00; --lo: #7a8590; --row-new: #fff6c7;
+    --display: "Golos Text", "Segoe UI", system-ui, sans-serif;
+    --body: "Golos Text", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #0f1419; --panel: #171e26; --fg: #e4e9ee; --muted: #93a0ad; --line: #2b3540;
+    --accent: #6ea2ff; --sheet: #4cc27a; --sheet-head: #17301f; --tg: #5aaef0; --tg-bg: #0e1a24; --bubble: #1d2a36;
+    --hi: #ff6b6b; --mid: #f0a540; --lo: #8995a1; --row-new: #3a3415; color-scheme: dark; } }
+  :root[data-theme="dark"] {
+    --bg: #0f1419; --panel: #171e26; --fg: #e4e9ee; --muted: #93a0ad; --line: #2b3540;
+    --accent: #6ea2ff; --sheet: #4cc27a; --sheet-head: #17301f; --tg: #5aaef0; --tg-bg: #0e1a24; --bubble: #1d2a36;
+    --hi: #ff6b6b; --mid: #f0a540; --lo: #8995a1; --row-new: #3a3415; color-scheme: dark; }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--body);
+         padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 40px; }
+  .wrap { max-width: 1280px; margin: 0 auto; display: grid; gap: 22px; }
+  header { display: grid; gap: 6px; max-width: 70ch; }
+  h1 { margin: 0; font: 700 clamp(24px, 3.4vw, 34px)/1.15 var(--display); text-wrap: balance; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--muted); }
+
+  .flow { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1.5fr) minmax(0, 360px); gap: 16px; align-items: start; }
+  @media (max-width: 1080px) { .flow { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .sheet { grid-column: 1 / -1; order: 3; } }
+  @media (max-width: 700px) { .flow { grid-template-columns: minmax(0, 1fr); } }
+
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; min-width: 0; display: flex; flex-direction: column; }
+  .bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  .step { font: 500 11px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .bar b { color: var(--fg); font-weight: 600; font-size: 14px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+
+  /* Сайт */
+  form { padding: 16px; display: grid; gap: 12px; }
+  label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+  input, textarea { font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 7px; padding: 9px 11px; width: 100%; }
+  input:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  textarea { min-height: 92px; resize: vertical; }
+  .send { font: 600 15px var(--body); color: #fff; background: var(--accent); border: 0; border-radius: 7px; padding: 11px; cursor: pointer; }
+  .send:disabled { opacity: .6; cursor: progress; }
+  .samples { padding: 0 16px 16px; display: grid; gap: 8px; }
+  .samples span { font-size: 12px; color: var(--muted); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font: 500 13px var(--body); color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px; cursor: pointer; }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .err { color: var(--hi); font-size: 13px; min-height: 1.2em; margin: -4px 0 0; }
+
+  /* Таблица */
+  .sheet .bar .dot { background: var(--sheet); }
+  .grid-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 13px; }
+  th, td { border: 1px solid var(--line); padding: 7px 9px; text-align: left; vertical-align: top; }
+  th { background: var(--sheet-head); font-weight: 600; white-space: nowrap; }
+  td.n { font: 12px var(--mono); color: var(--muted); text-align: center; width: 34px; }
+  td.t { font: 12px var(--mono); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  tr.new td { animation: flash 2.2s ease-out; }
+  @keyframes flash { from { background: var(--row-new); } to { background: transparent; } }
+  .pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+  .p-высокий { color: var(--hi); } .p-средний { color: var(--mid); } .p-низкий { color: var(--lo); }
+
+  /* Telegram */
+  .tg .bar .dot { background: var(--tg); }
+  .chat { background: var(--tg-bg); padding: 14px; display: flex; flex-direction: column; gap: 10px; max-height: 560px; overflow-y: auto; min-height: 260px; }
+  .msg { background: var(--bubble); border-radius: 12px 12px 12px 4px; padding: 10px 12px; font-size: 14px; max-width: 100%; box-shadow: 0 1px 1px rgba(0,0,0,.08); }
+  .msg.new { animation: pop .35s ease-out; }
+  @keyframes pop { from { transform: translateY(8px); opacity: .4; } to { transform: none; opacity: 1; } }
+  .msg .head { font-weight: 600; margin-bottom: 6px; }
+  .msg dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; }
+  .msg dt { color: var(--muted); } .msg dd { margin: 0; overflow-wrap: anywhere; }
+  .msg .reply { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); font-style: italic; }
+  .msg time { display: block; text-align: right; font: 11px var(--mono); color: var(--muted); margin-top: 4px; }
+  .skip { align-self: center; font-size: 12px; color: var(--muted); background: var(--panel); border-radius: 999px; padding: 3px 10px; }
+
+  .note { font-size: 13px; color: var(--muted); max-width: 80ch; }
+  @media (prefers-reduced-motion: reduce) { tr.new td, .msg.new { animation: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Заявка с сайта сама попадает в таблицу и в Telegram менеджеру</h1>
+    <p>Заполните форму или выберите готовый пример. ИИ определит, что нужно клиенту и насколько это срочно, запишет строку в Google Таблицу и пришлёт менеджеру уведомление с черновиком ответа. Спам отсеивается без уведомления.</p>
+  </header>
+
+  <div class="flow">
+    <section class="panel" aria-label="Форма на сайте">
+      <div class="bar"><span class="dot" style="background: var(--accent)"></span><span class="step">1 · сайт</span><b>Форма заявки</b></div>
+      <form id="f" novalidate>
+        <label for="name">Имя <input id="name" name="name" maxlength="100" value="Олег"></label>
+        <label for="phone">Телефон <input id="phone" name="phone" type="tel" maxlength="30" value="+7 912 345-67-89"></label>
+        <label for="email">Email <input id="email" name="email" type="email" maxlength="100"></label>
+        <label for="message">Что вас интересует? <textarea id="message" name="message" maxlength="2000">Хочу заказать 50 штук оптом, какая цена? Нужно до пятницы.</textarea></label>
+        <p class="err" id="err" role="alert"></p>
+        <button class="send" id="send" type="submit">Отправить заявку</button>
+      </form>
+      <div class="samples">
+        <span>Примеры заявок</span>
+        <div class="chips" id="chips"></div>
+      </div>
+    </section>
+
+    <section class="panel sheet" aria-label="Google Таблица">
+      <div class="bar"><span class="dot"></span><span class="step">2 · таблица</span><b>Заявки · Google Sheets</b></div>
+      <div class="grid-wrap">
+        <table>
+          <thead><tr><th></th><th>Дата</th><th>Имя</th><th>Контакт</th><th>Категория</th><th>Приоритет</th><th>Суть</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel tg" aria-label="Telegram менеджера">
+      <div class="bar"><span class="dot"></span><span class="step">3 · telegram</span><b>Бот «Заявки»</b></div>
+      <div class="chat" id="chat" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <p class="note">Это интерактивная демонстрация, все заявки в ней примерные. На этой странице разбор делают простые правила по ключевым словам. В рабочей версии заявку разбирает Claude: он точнее определяет намерение клиента и пишет черновик ответа под конкретный вопрос. Работает с Tilda, WordPress и любой формой на сайте.</p>
+</div>
+
+<script>
+const SAMPLES = [
+  { label: "Срочный заказ", name: "Олег", phone: "+7 912 345-67-89", email: "", message: "Хочу заказать 50 штук оптом, какая цена? Нужно до пятницы." },
+  { label: "Жалоба", name: "Марина", phone: "", email: "marina.k@mail.ru", message: "Купила у вас кофемашину, через неделю перестала греть воду. Не работает, хочу возврат или замену." },
+  { label: "Вопрос", name: "Дмитрий", phone: "+7 903 222-11-00", email: "", message: "Подскажите, какая модель лучше подойдёт для небольшого офиса на 10 человек?" },
+  { label: "Спам", name: "SEO Pro", phone: "", email: "promo@seo-top.example", message: "Продвижение сайта в ТОП-10 за 2 недели! Пишите https://seo-top.example" },
+];
+
+const RULES = {
+  spam: ["seo", "продвижение сайта", "раскрутк", "казино", "http://", "https://"],
+  support: ["не работает", "перестал", "сломал", "проблем", "жалоб", "возврат", "брак", "ошибк"],
+  buy: ["купить", "заказ", "цена", "стоимость", "сколько стоит", "прайс", "счёт", "счет", "оплат"],
+  urgent: ["срочно", "сегодня", "завтра", "до пятницы", "оптом", "партия"],
+};
+const has = (text, words) => words.some(w => text.includes(w));
+
+function classify(lead) {
+  const t = lead.message.toLowerCase();
+  let category, priority;
+  if (has(t, RULES.spam)) [category, priority] = ["спам", "низкий"];
+  else if (has(t, RULES.support)) [category, priority] = ["поддержка", "высокий"];
+  else if (has(t, RULES.buy)) [category, priority] = ["покупка", has(t, RULES.urgent) ? "высокий" : "средний"];
+  else if (t.trim()) [category, priority] = ["консультация", "средний"];
+  else [category, priority] = ["другое", "низкий"];
+
+  const replies = {
+    "покупка": `Здравствуйте, ${lead.name}! Спасибо за заказ. Менеджер подготовит расчёт и свяжется с вами в течение 15 минут.`,
+    "поддержка": `Здравствуйте, ${lead.name}! Нам жаль, что так вышло. Мы уже передали вопрос в сервис и предложим замену или возврат сегодня.`,
+    "консультация": `Здравствуйте, ${lead.name}! Спасибо за вопрос. Менеджер позвонит и поможет подобрать подходящий вариант.`,
+    "другое": `Здравствуйте, ${lead.name}! Спасибо за заявку, скоро свяжемся.`,
+    "спам": "",
+  };
+  const summary = lead.message.trim().slice(0, 110) + (lead.message.trim().length > 110 ? "…" : "") || "Заявка без текста, нужно перезвонить";
+  return { category, priority, summary, reply: replies[category] };
+}
+
+const ICON = { "высокий": "🔴", "средний": "🟡", "низкий": "⚪" };
+const rowsEl = document.getElementById("rows");
+const chatEl = document.getElementById("chat");
+let rowCount = 0;
+
+function el(tag, attrs = {}, text) {
+  const node = document.createElement(tag);
+  Object.entries(attrs).forEach(([k, v]) => node.setAttribute(k, v));
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function stamp(date) {
+  const p = n => String(n).padStart(2, "0");
+  return { full: `${date.getFullYear()}-${p(date.getMonth() + 1)}-${p(date.getDate())} ${p(date.getHours())}:${p(date.getMinutes())}`, short: `${p(date.getHours())}:${p(date.getMinutes())}` };
+}
+
+function addRow(lead, a, when, fresh) {
+  rowCount += 1;
+  const tr = el("tr", fresh ? { class: "new" } : {});
+  tr.append(
+    el("td", { class: "n" }, String(rowCount + 1)),
+    el("td", { class: "t" }, when.full),
+    el("td", {}, lead.name),
+    el("td", {}, lead.phone || lead.email),
+    el("td", {}, a.category),
+  );
+  const pr = el("td"); pr.append(el("span", { class: `pill p-${a.priority}` }, a.priority));
+  tr.append(pr, el("td", {}, a.summary));
+  rowsEl.prepend(tr);
+}
+
+function addMessage(lead, a, when, fresh) {
+  if (a.category === "спам") {
+    chatEl.append(el("div", { class: "skip" }, `Спам от «${lead.name}» отфильтрован, менеджер не отвлекается`));
+  } else {
+    const m = el("div", { class: fresh ? "msg new" : "msg" });
+    m.append(el("div", { class: "head" }, `${ICON[a.priority]} Новая заявка · ${a.category} · приоритет ${a.priority}`));
+    const dl = el("dl");
+    const pairs = [["Имя", lead.name], lead.phone && ["Телефон", lead.phone], lead.email && ["Email", lead.email], ["Суть", a.summary]].filter(Boolean);
+    pairs.forEach(([k, v]) => dl.append(el("dt", {}, k), el("dd", {}, v)));
+    m.append(dl, el("div", { class: "reply" }, `Черновик ответа: ${a.reply}`), el("time", {}, when.short));
+    chatEl.append(m);
+  }
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+
+function process(lead, when, fresh) {
+  const a = classify(lead);
+  addRow(lead, a, when, fresh);
+  addMessage(lead, a, when, fresh);
+}
+
+// Стартовое состояние: две уже обработанные заявки
+const now = new Date();
+process(SAMPLES[2], stamp(new Date(now - 47 * 60000)), false);
+process(SAMPLES[3], stamp(new Date(now - 12 * 60000)), false);
+
+const form = document.getElementById("f");
+const err = document.getElementById("err");
+const send = document.getElementById("send");
+
+const chips = document.getElementById("chips");
+SAMPLES.forEach(s => {
+  const b = el("button", { type: "button", class: "chip" }, s.label);
+  b.addEventListener("click", () => {
+    ["name", "phone", "email", "message"].forEach(k => form.elements[k].value = s[k]);
+    err.textContent = "";
+  });
+  chips.append(b);
+});
+
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const lead = Object.fromEntries(["name", "phone", "email", "message"].map(k => [k, form.elements[k].value.trim()]));
+  if (!lead.name) { err.textContent = "Введите имя"; return; }
+  if (!lead.phone && !lead.email) { err.textContent = "Укажите телефон или email, чтобы менеджер мог связаться"; return; }
+  err.textContent = "";
+  send.disabled = true; send.textContent = "Разбираем заявку…";
+  setTimeout(() => {
+    process(lead, stamp(new Date()), true);
+    send.disabled = false; send.textContent = "Отправить заявку";
+  }, 700);
+});
+</script>
