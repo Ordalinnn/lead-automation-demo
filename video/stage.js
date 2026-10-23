@@ -160,10 +160,14 @@
   hl('#m1', true);
   move('#m1', .25, .1); wait(1.0);
   caption('2/5', 'Срочность и черновик ответа уже готовы');
-  move('#m1', .45, .82); wait(1.5);
+  move('#m1', .45, .62); wait(1.3);
+  caption('2/5', 'Менеджер берёт заявку одной кнопкой');
+  move('#m1 .tg-btns button', .5, .5); wait(.1);
+  at(t => { tweens.ripple = { t0: t, at: [...curL] }; $('#m1 .tg-btns button').click(); });
+  wait(1.4);
   hl('#m1', false);
 
-  caption('3/5', 'Заявка записана в Google Таблицу');
+  caption('3/5', 'В таблице видно статус и ответственного');
   cam('.sheet', {}); wait(.85);
   move('#rows tr', V ? .5 : .62, .5);
   hl('.sheet', true); wait(1.8); hl('.sheet', false);

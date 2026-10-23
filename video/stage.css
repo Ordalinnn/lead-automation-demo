@@ -1,7 +1,7 @@
 *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 html { overflow: hidden; background: var(--bg); }
 body { transform-origin: 0 0; padding-block: 24px; }
-body header, body .note, body .video, body .try { display: none; }
+body header, body .note, body .video, body .try, body .sales, body .final, body .hint { display: none; }
 #cur { position: fixed; left: 0; top: 0; width: 22px; height: 22px; z-index: 99; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,.25)); }
 #ripple { position: fixed; z-index: 98; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%; pointer-events: none; background: rgba(31,95,214,.30); opacity: 0; }
 #cap { position: fixed; left: 50%; bottom: 28px; z-index: 97; display: flex; align-items: center; gap: 14px; opacity: 0;

@@ -80,8 +80,49 @@
   .msg dt { color: var(--muted); } .msg dd { margin: 0; overflow-wrap: anywhere; }
   .msg .reply { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); font-style: italic; }
   .msg time { display: block; text-align: right; font: 11px var(--mono); color: var(--muted); margin-top: 4px; }
+  .tg-btns { display: grid; gap: 4px; margin-top: 8px; }
+  .tg-btns .r { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; }
+  .tg-btns button, .tg-btns a { font: 500 13px var(--body); color: var(--tg); background: color-mix(in srgb, var(--tg) 12%, transparent);
+    border: 0; border-radius: 8px; padding: 7px 6px; cursor: pointer; text-align: center; text-decoration: none; }
+  .tg-btns button:hover, .tg-btns a:hover { background: color-mix(in srgb, var(--tg) 22%, transparent); }
+  .msg .foot { margin-top: 8px; font-size: 13px; font-weight: 600; }
+  .msg.sys { background: var(--bubble); }
+  .msg.sys .head { margin-bottom: 4px; }
+  .st { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+  .st-new { background: #fff1c2; color: #7a5600; } .st-taken { background: #dbe8ff; color: #1f4fa8; }
+  .st-contact { background: #e8e0ff; color: #5b3fb3; } .st-deal { background: #d6f5df; color: #137a3c; }
+  .st-lost, .st-spam { background: #ececec; color: #5d6875; }
+  .hint { font-size: 12px; color: var(--muted); }
   .skip { align-self: center; font-size: 12px; color: var(--muted); background: var(--panel); border-radius: 999px; padding: 3px 10px; }
 
+  .cta { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn { font: 600 14px var(--body); text-decoration: none; color: var(--fg); border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 9px 14px; }
+  .btn.primary { color: #fff; background: var(--accent); border-color: var(--accent); }
+  .btn:hover { border-color: var(--accent); }
+  .video { display: grid; gap: 10px; max-width: 880px; }
+  .video video { width: 100%; max-width: 100%; display: block; border-radius: 12px; background: #0a1428; aspect-ratio: 16 / 9; border: 1px solid var(--line); }
+  .video p, .try { margin: 0; font-size: 14px; color: var(--muted); }
+  .try { font-weight: 600; color: var(--fg); font-size: 16px; }
+  .sales { display: grid; gap: 14px; margin-top: 18px; }
+  .sales h2 { margin: 0; font: 700 clamp(20px, 2.6vw, 26px)/1.2 var(--display); text-wrap: balance; }
+  .sales .sub { margin: 0; color: var(--muted); max-width: 70ch; }
+  .cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .cols.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 980px) { .cols { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cols.three { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 560px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+  .box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+  .box h3 { margin: 0; font: 600 16px/1.3 var(--body); }
+  .box p { margin: 0; color: var(--muted); font-size: 14px; }
+  .box .step { font: 500 11px/1 var(--mono); }
+  .price { font: 700 26px/1.1 var(--display); font-variant-numeric: tabular-nums; color: var(--fg); }
+  .box ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 3px; font-size: 14px; }
+  .box.featured { border: 2px solid var(--accent); }
+  .tag { justify-self: start; font: 600 12px var(--body); color: #fff; background: var(--accent); border-radius: 999px; padding: 2px 10px; }
+  .faq { display: grid; gap: 8px; }
+  .faq details { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; }
+  .faq summary { cursor: pointer; font-weight: 600; }
+  .faq details p { margin: 8px 0 0; color: var(--muted); max-width: 75ch; }
+  .final { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: grid; gap: 10px; justify-items: start; }
   .note { font-size: 13px; color: var(--muted); max-width: 80ch; }
   @media (prefers-reduced-motion: reduce) { tr.new td, .msg.new { animation: none; } }
 </style>
@@ -89,8 +130,22 @@
 <div class="wrap">
   <header>
     <h1>Заявка с сайта сама попадает в таблицу и в Telegram менеджеру</h1>
-    <p>Заполните форму или выберите готовый пример. ИИ определит, что нужно клиенту и насколько это срочно, запишет строку в Google Таблицу и пришлёт менеджеру уведомление с черновиком ответа. Спам отсеивается без уведомления.</p>
+    <p>Заполните форму или выберите готовый пример. ИИ определит, что нужно клиенту и насколько это срочно, запишет строку в Google Таблицу и пришлёт менеджеру заявку в Telegram с кнопками. Нажмите «Беру в работу» и посмотрите, как меняется таблица.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://t.me/ordalinn" target="_blank" rel="noopener">Заказать автоматизацию: @ordalinn</a>
+      <a class="btn" href="https://github.com/Ordalinnn/lead-automation-demo" target="_blank" rel="noopener">Код на GitHub</a>
+      <a class="btn" href="../">Другой проект: бот записи</a>
+    </div>
   </header>
+
+  <section class="video" aria-label="Видео-демонстрация">
+    <video controls playsinline preload="metadata" poster="poster.jpg">
+      <source src="demo.mp4" type="video/mp4">
+    </video>
+    <p>40 секунд о том, как это работает: заявка, уведомление в Telegram, строка в таблице, жалоба и спам.</p>
+  </section>
+
+  <p class="try">Попробуйте сами: заполните форму или нажмите готовый пример</p>
 
   <div class="flow">
     <section class="panel" aria-label="Форма на сайте">
@@ -113,19 +168,71 @@
       <div class="bar"><span class="dot"></span><span class="step">3 · таблица</span><b>Заявки · Google Sheets</b></div>
       <div class="grid-wrap">
         <table>
-          <thead><tr><th></th><th>Дата</th><th>Имя</th><th>Контакт</th><th>Категория</th><th>Приоритет</th><th>Суть</th></tr></thead>
+          <thead><tr><th></th><th>Дата</th><th>Имя</th><th>Контакт</th><th>Категория</th><th>Приоритет</th><th>Статус</th><th>Ответственный</th><th>Суть</th></tr></thead>
           <tbody id="rows"></tbody>
         </table>
       </div>
     </section>
 
     <section class="panel tg" aria-label="Telegram менеджера">
-      <div class="bar"><span class="dot"></span><span class="step">2 · telegram</span><b>Бот «Заявки»</b></div>
+      <div class="bar"><span class="dot"></span><span class="step">2 · telegram</span><b>Бот «Заявки»</b><span class="hint" style="margin-left:auto">Нажмите «Беру в работу»</span></div>
       <div class="chat" id="chat" aria-live="polite"></div>
     </section>
   </div>
 
-  <p class="note">Это интерактивная демонстрация, все заявки в ней примерные. На этой странице разбор делают простые правила по ключевым словам. В рабочей версии заявку разбирает Claude: он точнее определяет намерение клиента и пишет черновик ответа под конкретный вопрос. Работает с Tilda, WordPress и любой формой на сайте.</p>
+
+  <section class="sales" aria-labelledby="s-what">
+    <h2 id="s-what">Что вы получите</h2>
+    <div class="cols">
+      <div class="box"><h3>Заявка за секунды</h3><p>Менеджер получает заявку в Telegram сразу, а не когда проверит почту или админку сайта.</p></div>
+      <div class="box"><h3>Кнопки прямо в Telegram</h3><p>«Беру в работу», «Связался», «Сделка». Видно, кто взял заявку, и второй менеджер её не перехватит.</p></div>
+      <div class="box"><h3>Напоминание</h3><p>Если заявку никто не взял за 15 минут, бот напомнит. Клиенты не ждут и не уходят к конкурентам.</p></div>
+      <div class="box"><h3>Отчёт каждое утро</h3><p>Сколько было заявок и сделок, как быстро ответили и кто из менеджеров сколько взял.</p></div>
+      <div class="box"><h3>Срочные видно сразу</h3><p>ИИ помечает горячие заявки и жалобы красным и готовит черновик ответа клиенту.</p></div>
+      <div class="box"><h3>Без спама</h3><p>Предложения «продвинуть сайт» и боты отсеиваются и не отвлекают менеджеров.</p></div>
+      <div class="box"><h3>Повторные обращения</h3><p>Если клиент уже писал на этой неделе, заявка отмечена: это горячий клиент.</p></div>
+      <div class="box"><h3>Вся история в вашей таблице</h3><p>Заявки, статусы и сводка по источникам и менеджерам в вашей Google Таблице. Сервер не нужен.</p></div>
+    </div>
+  </section>
+
+  <section class="sales" aria-labelledby="s-how">
+    <h2 id="s-how">Как подключаем</h2>
+    <div class="cols three">
+      <div class="box"><span class="step">Шаг 1 · 15 минут</span><h3>Короткий созвон</h3><p>Смотрим, где у вас формы на сайте и кто обрабатывает заявки.</p></div>
+      <div class="box"><span class="step">Шаг 2 · 1–2 дня</span><h3>Настройка</h3><p>Подключаю формы, Telegram и таблицу. Сайт переделывать не нужно.</p></div>
+      <div class="box"><span class="step">Шаг 3 · в день сдачи</span><h3>Проверка на ваших заявках</h3><p>Отправляем тестовые заявки вместе, передаю короткую инструкцию.</p></div>
+    </div>
+  </section>
+
+  <section class="sales" aria-labelledby="s-price">
+    <h2 id="s-price">Стоимость</h2>
+    <p class="sub">Разовая оплата за настройку. Предоплата 50%, остаток после того, как вы проверите, что всё работает.</p>
+    <div class="cols three">
+      <div class="box"><h3>Старт</h3><div class="price">35 000 ₸</div><ul><li>1 форма → Telegram</li><li>Google Таблица с историей заявок</li><li>Защита от спама</li><li>Запуск за 1 день</li></ul></div>
+      <div class="box featured"><span class="tag">Чаще выбирают</span><h3>Стандарт</h3><div class="price">70 000 ₸</div><ul><li>Всё из «Старта», до 3 форм</li><li>Кнопки в Telegram: в работе, связался, сделка</li><li>Напоминания о невзятых заявках</li><li>Повторные обращения</li><li>Запуск за 2 дня</li></ul></div>
+      <div class="box"><h3>Под ключ</h3><div class="price">120 000 ₸</div><ul><li>Всё из «Стандарта»</li><li>ИИ-разбор: срочность, категория, спам</li><li>Черновики ответов клиентам</li><li>Отчёт каждое утро и сводка по менеджерам</li><li>14 дней поддержки</li></ul></div>
+    </div>
+    <p class="sub">Поддержка после запуска: 15 000 ₸ в месяц. Работа ИИ оплачивается отдельно напрямую Anthropic, это около $0,30 за 1000 заявок.</p>
+  </section>
+
+  <section class="sales faq" aria-labelledby="s-faq">
+    <h2 id="s-faq">Частые вопросы</h2>
+    <details><summary>С какими сайтами это работает?</summary><p>Tilda, WordPress (Contact Form 7, Elementor), Webflow, Wix и любой сайт, форма которого умеет отправлять вебхук. Сам сайт переделывать не нужно.</p></details>
+    <details><summary>У нас уже есть CRM. Это нужно?</summary><p>Да, это дополняет CRM. Заявки продолжат попадать туда же, а менеджер дополнительно получит мгновенное уведомление в Telegram с пометкой срочности.</p></details>
+    <details><summary>Сколько стоит работа ИИ каждый месяц?</summary><p>Разбор 1000 заявок обходится примерно в $0,30. Оплата идёт с вашего аккаунта Anthropic напрямую, без наценки. Без ИИ система тоже работает, но без пометки срочности и черновиков.</p></details>
+    <details><summary>Нужен ли сервер или хостинг?</summary><p>Нет. Система работает внутри вашей Google Таблицы и ничего не стоит в месяц, кроме работы ИИ, если вы его подключите.</p></details>
+    <details><summary>Где хранятся данные клиентов?</summary><p>В вашей Google Таблице и вашем Telegram. Всё настраивается на ваши аккаунты, после сдачи вы можете отключить мне доступ.</p></details>
+    <details><summary>Можно, чтобы заявки получали несколько менеджеров?</summary><p>Да. Бот добавляется в общий чат менеджеров. Кто первым нажал «Беру в работу», тот и ведёт заявку, а в отчёте видно, кто сколько взял и как быстро ответил.</p></details>
+    <details><summary>Что, если что-то сломается?</summary><p>14 дней после запуска исправляю бесплатно. Дальше можно подключить поддержку за 15 000 ₸ в месяц или обращаться разово.</p></details>
+  </section>
+
+  <section class="final" aria-label="Связаться">
+    <h2 style="margin:0;font:700 22px/1.25 var(--display)">Посчитаем, сколько заявок вы теряете</h2>
+    <p class="sub" style="margin:0;color:var(--muted)">Напишите в Telegram, какой у вас сайт и сколько примерно заявок в день. Отвечу в течение часа в рабочее время.</p>
+    <a class="btn primary" href="https://t.me/ordalinn" target="_blank" rel="noopener">Написать в Telegram: @ordalinn</a>
+  </section>
+
+  <p class="note">Это интерактивная демонстрация, все заявки и цифры в ней примерные. На этой странице разбор делают простые правила по ключевым словам. В рабочей версии заявку разбирает Claude: он точнее определяет намерение клиента и пишет черновик ответа под конкретный вопрос. Работает с Tilda, WordPress и любой формой на сайте.</p>
 </div>
 
 <script>
@@ -178,7 +285,19 @@ function el(tag, attrs = {}, text) {
 
 function stamp(date) {
   const p = n => String(n).padStart(2, "0");
-  return { full: `${date.getFullYear()}-${p(date.getMonth() + 1)}-${p(date.getDate())} ${p(date.getHours())}:${p(date.getMinutes())}`, short: `${p(date.getHours())}:${p(date.getMinutes())}` };
+  return { full: `${date.getFullYear()}-${p(date.getMonth() + 1)}-${p(date.getDate())} ${p(date.getHours())}:${p(date.getMinutes())}`, short: `${p(date.getHours())}:${p(date.getMinutes())}`, date };
+}
+
+const STATUSES = {
+  new: ["Новая", "st-new"], taken: ["В работе", "st-taken"], contact: ["Связались", "st-contact"],
+  deal: ["Сделка", "st-deal"], lost: ["Отказ", "st-lost"], spam: ["Спам", "st-spam"],
+};
+const MANAGER = "Вы";
+
+function setStatus(row, key, owner) {
+  const [label, cls] = STATUSES[key];
+  row.status.replaceChildren(el("span", { class: `st ${cls}` }, label));
+  if (owner) row.owner.textContent = owner;
 }
 
 function addRow(lead, a, when, fresh) {
@@ -192,11 +311,50 @@ function addRow(lead, a, when, fresh) {
     el("td", {}, a.category),
   );
   const pr = el("td"); pr.append(el("span", { class: `pill p-${a.priority}` }, a.priority));
-  tr.append(pr, el("td", {}, a.summary));
+  const row = { status: el("td"), owner: el("td") };
+  tr.append(pr, row.status, row.owner, el("td", {}, a.summary));
+  setStatus(row, a.category === "спам" ? "spam" : "new");
   rowsEl.prepend(tr);
+  return row;
 }
 
-function addMessage(lead, a, when, fresh) {
+function minutesSince(date) {
+  const m = Math.max(1, Math.round((Date.now() - date.getTime()) / 60000));
+  return m < 60 ? `${m} мин` : `${Math.floor(m / 60)} ч ${m % 60} мин`;
+}
+
+function waLink(phone) {
+  let d = (phone || "").replace(/\D/g, "");
+  if (d.length === 11 && d[0] === "8") d = "7" + d.slice(1);
+  return d.length >= 10 ? `https://wa.me/${d}` : null;
+}
+
+function renderButtons(box, row, lead, when, stage, foot) {
+  const act = (key, label) => {
+    const b = el("button", { type: "button" }, label);
+    b.addEventListener("click", () => {
+      const first = stage === "new" || !row.owner.textContent;
+      setStatus(row, key, MANAGER);
+      const icons = { taken: "👤", contact: "📞", deal: "💰", lost: "❌" };
+      foot.textContent = `${icons[key]} ${STATUSES[key][0]}: ${MANAGER}` + (first ? ` · реакция ${minutesSince(when.date)}` : "");
+      renderButtons(box, row, lead, when, key, foot);
+    });
+    return b;
+  };
+  const rows = [];
+  if (stage === "new") rows.push([act("taken", "✅ Беру в работу")]);
+  if (["new", "taken", "contact"].includes(stage)) {
+    const r = [];
+    if (stage !== "contact") r.push(act("contact", "📞 Связался"));
+    r.push(act("deal", "💰 Сделка"), act("lost", "❌ Отказ"));
+    rows.push(r);
+  }
+  const wa = waLink(lead.phone);
+  if (wa) rows.push([el("a", { href: wa, target: "_blank", rel: "noopener" }, "💬 Написать в WhatsApp")]);
+  box.replaceChildren(...rows.map(r => { const d = el("div", { class: "r" }); d.append(...r); return d; }));
+}
+
+function addMessage(lead, a, when, fresh, row) {
   if (a.category === "спам") {
     chatEl.append(el("div", { class: "skip" }, `Спам от «${lead.name}» отфильтрован, менеджер не отвлекается`));
   } else {
@@ -205,21 +363,34 @@ function addMessage(lead, a, when, fresh) {
     const dl = el("dl");
     const pairs = [["Имя", lead.name], lead.phone && ["Телефон", lead.phone], lead.email && ["Email", lead.email], ["Суть", a.summary]].filter(Boolean);
     pairs.forEach(([k, v]) => dl.append(el("dt", {}, k), el("dd", {}, v)));
-    m.append(dl, el("div", { class: "reply" }, `Черновик ответа: ${a.reply}`), el("time", {}, when.short));
+    const foot = el("div", { class: "foot" });
+    const btns = el("div", { class: "tg-btns" });
+    renderButtons(btns, row, lead, when, "new", foot);
+    m.append(dl, el("div", { class: "reply" }, `Черновик ответа: ${a.reply}`), foot, el("time", {}, when.short), btns);
     chatEl.append(m);
   }
   chatEl.scrollTop = chatEl.scrollHeight;
 }
 
+function sysMessage(head, lines, when) {
+  const m = el("div", { class: "msg sys" });
+  m.append(el("div", { class: "head" }, head));
+  lines.forEach(l => m.append(el("div", {}, l)));
+  m.append(el("time", {}, when));
+  chatEl.append(m);
+}
+
 function process(lead, when, fresh) {
   const a = classify(lead);
-  addRow(lead, a, when, fresh);
-  addMessage(lead, a, when, fresh);
+  const row = addRow(lead, a, when, fresh);
+  addMessage(lead, a, when, fresh, row);
 }
 
 // Стартовое состояние: две уже обработанные заявки
 const now = new Date();
+sysMessage("📊 Заявки за вчера", ["Всего: 14 (и 3 спам отсеян)", "🔴 Срочных: 5 · 💰 Сделок: 3", "⏱ Среднее время реакции: 7 мин", "✅ Все заявки взяты в работу"], "09:00");
 process(SAMPLES[2], stamp(new Date(now - 47 * 60000)), false);
+sysMessage("⏰ Напоминание", ["Заявку от Дмитрия никто не взял уже 32 мин."], stamp(new Date(now - 15 * 60000)).short);
 process(SAMPLES[3], stamp(new Date(now - 12 * 60000)), false);
 
 const form = document.getElementById("f");
